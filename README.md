@@ -1,15 +1,2 @@
-# Horizon
-*Explore what's above — from satellites to aircraft*.
-
-## Description
-Horizon is a two-phase aviation and aerospace tracking tool that monitors real-time overhead activity using publicly available aerospace and weather data.
-The project starts as a Rust based commmand-line interface (CLI) focused on performance, data processing, and efficient API interaction. It will 
-evolve into a grapical user interface (GUI) written in C#, offering an intuitive visual dashboard for users to track sky activity in their region.
-
-Horizon shhowcases clean archictecural practices, real-time API intergration, and robust CI/CD automation. It's designed to demonstrate skills in systems
-programming, UI development, cross-language project structuring, and live data aggregation in the fields of aerospace and meteorology.
-
-
-## License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+# Bedrock
+Bedrock is a static C library (libBedrock.a) implementing foundational data structures — Stack, Trie, and BST — designed with embedded systems constraints in mind. The library follows a caller-provided memory model, avoiding heap allocation entirely to ensure compatibility with resource-constrained microcontroller targets. A Rust CLI layer sits on top of the C library, interacting via FFI, serving as both a practical interface and a learning exercise in cross-language interoperability. The project is intentionally minimal and deliberate, prioritizing deep understanding of systems fundamentals over feature breadth.
