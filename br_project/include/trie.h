@@ -20,5 +20,6 @@ bool trie_search(Trie *tree, const char *c);
 bool trie_pre_fix_search(Trie *t, const char *c);
 int trie_delete_key(Trie *t, const char *c);
 int trie_delete_tree(Trie *tree);
+int char_to_index(char item);
 TrieNode *trie_create_node();
 #endif //BEDROCK_TRIE_H
