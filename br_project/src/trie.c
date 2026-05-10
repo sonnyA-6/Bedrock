@@ -52,8 +52,51 @@ int trie_insert(Trie *t, const char *data) {
     current_index->is_leaf = true;
     return 0;
 }
-bool trie_search(Trie *tree, const char *c);
-bool trie_pre_fix_search(Trie *t, const char *c);
+//Check if the exact key exists in the trie.
+bool trie_search(Trie *tree, const char *c) {
+    //Null guards
+    if (tree == NULL || c == NULL) {
+        return false;
+    }
+    TrieNode *search_node = tree->root;
+
+    for (int i=0; c[i] != '\0'; i++) {
+        int char_index = char_to_index(c[i]);
+        if (char_index == -1) {
+            return false;
+        }
+        //Specified index is not filled
+        if (search_node->children[char_index] == NULL) {
+            return false;
+        }
+        //Keep searching
+        search_node = search_node->children[char_index];
+    }
+    //Check the leaf for the item
+    return search_node->is_leaf;
+}
+//Check if anything "does" start with the specific "string"
+bool trie_pre_fix_search(Trie *t, const char *c) {
+    //Null guards
+    if (t == NULL || c == NULL) {
+        return false;
+    }
+    TrieNode *prefix_search_node = t->root;
+    for (int i=0; c[i] != '\0'; i++) {
+        int char_index = char_to_index(c[i]);
+        if (char_index == -1) {
+            return false;
+        }
+        //Encountered a null node | Prefix is not found
+        if (prefix_search_node->children[char_index] == NULL) {
+            return false;
+        }
+        //Continue searching
+        prefix_search_node = prefix_search_node->children[char_index];
+    }
+    //No null nodes encountered | prefix exists
+    return true;
+}
 int trie_delete_key(Trie *t, const char *c);
 int trie_delete_tree(Trie *tree);
 TrieNode *trie_create_node(){
