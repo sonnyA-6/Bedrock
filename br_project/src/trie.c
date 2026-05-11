@@ -97,7 +97,32 @@ bool trie_pre_fix_search(Trie *t, const char *c) {
     //No null nodes encountered | prefix exists
     return true;
 }
-int trie_delete_key(Trie *t, const char *c);
+int trie_delete_key(Trie *t, const char *c) {
+    //Null guards
+    if (t == NULL || c == NULL) {
+        return -1;
+    }
+    TrieNode *find_key_node = t->root;
+    for (int i=0; c[i] != '\0'; i++) {
+        int char_index = char_to_index(c[i]);
+        if (char_index == -1) {
+            return -1;
+        }
+        //Haven't found the leaf, Continue searching
+        if (find_key_node->children[char_index] != NULL) {
+            find_key_node = find_key_node->children[char_index];
+        //Node is null and we can't free it
+        } else {
+            return -1;
+        }
+    }
+    if (find_key_node->is_leaf != true) {
+        return -1;
+    }
+    //recursive call
+    trie_delete_recursive(t->root, c, 0);
+    return 0;
+}
 int trie_delete_tree(Trie *tree);
 TrieNode *trie_create_node(){
     //Allocate memory for a new TrieNode | cast since malloc returns a void
@@ -108,6 +133,35 @@ TrieNode *trie_create_node(){
     memset(new_node->children, 0, sizeof(new_node->children));
     new_node->is_leaf = false;
     return new_node;
+}
+
+bool trie_has_children(TrieNode *node) {
+    for (int i=0; i < TRIE_ALPHABET_SIZE; i++) {
+        //Any non-null slot is found
+        if (node->children[i] != NULL){
+            return true;
+        }
+    }
+    //Any null slot is found
+    return false;
+}
+
+bool trie_delete_recursive (TrieNode *node, const char *c, int depth) {
+    //Base case | reached end of key
+    if (c[depth] == '\0') {
+        node->is_leaf = false;
+        return !trie_has_children(node);
+    }
+    int char_index = char_to_index(c[depth]);
+    bool can_free = trie_delete_recursive(node->children[char_index], c, depth+1);
+    if (can_free) {
+        free(node->children[char_index]);
+        node->children[char_index] = NULL;
+    }
+    if (!(trie_has_children(node)) && !(node->is_leaf)) {
+        return true;
+    }
+    return false;
 }
 
 /*
