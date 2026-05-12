@@ -123,7 +123,15 @@ int trie_delete_key(Trie *t, const char *c) {
     trie_delete_recursive(t->root, c, 0);
     return 0;
 }
-int trie_delete_tree(Trie *tree);
+int trie_delete_tree(Trie *tree){
+    //Null guard 
+    if (tree == NULL){
+    	return -1;
+    }
+    trie_free_nodes(tree->root);
+    tree->root= NULL;
+    return 0;
+}
 TrieNode *trie_create_node(){
     //Allocate memory for a new TrieNode | cast since malloc returns a void
     TrieNode *new_node = malloc(sizeof(TrieNode));
@@ -144,6 +152,18 @@ bool trie_has_children(TrieNode *node) {
     }
     //Any null slot is found
     return false;
+}
+
+void trie_free_nodes(TrieNode *node) {
+    //Null guard
+    if (node == NULL) {
+        return;
+    }
+    //Recurse into each child node
+    for (int i=0; i< TRIE_ALPHABET_SIZE; i++) {
+        trie_free_nodes(node->children[i]);
+    }
+    free(node);
 }
 
 bool trie_delete_recursive (TrieNode *node, const char *c, int depth) {

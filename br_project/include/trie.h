@@ -23,5 +23,6 @@ int trie_delete_tree(Trie *tree);
 int char_to_index(char item);
 TrieNode *trie_create_node();
 bool trie_has_children(TrieNode *node);
+void trie_free_nodes(TrieNode *node);
 bool trie_delete_recursive (TrieNode *node, const char *c, int depth);
 #endif //BEDROCK_TRIE_H
