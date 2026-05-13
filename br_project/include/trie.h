@@ -13,13 +13,15 @@ typedef struct Trie {
     TrieNode *root;
 }Trie;
 
-
+//Main functions
 int trie_init(Trie *tree);
 int trie_insert(Trie *t, const char *data);
 bool trie_search(Trie *tree, const char *c);
 bool trie_pre_fix_search(Trie *t, const char *c);
 int trie_delete_key(Trie *t, const char *c);
 int trie_delete_tree(Trie *tree);
+
+//Helper functions
 int char_to_index(char item);
 TrieNode *trie_create_node();
 bool trie_has_children(TrieNode *node);
