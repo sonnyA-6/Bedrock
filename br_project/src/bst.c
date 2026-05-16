@@ -36,9 +36,36 @@ BSTNode *bst_search(BST *tree, int32_t data){
     }
     //Start comparision search at root
     return bst_search_recursive(tree->root, data);
-
 }
-//Helper function 
+
+void bst_inorder(BST *tree, void(*callback)(BSTNode *node)){
+    //Null Guard
+    if (tree == NULL){
+        return;
+    }
+    //Recurse in-order
+    bst_inorder_recursive(tree->root, callback);
+}
+
+void bst_preorder(BST *tree, void(*callback)(BSTNode *node)){
+    //Null guard
+    if(tree == NULL){
+        return;
+    }
+    //Recurse pre-order
+    bst_pre_order_recursive(tree->root, callback);
+}
+
+void bst_postorder(BST *tree, void(*callback)(BSTNode *node)){
+    //Null guard
+    if(tree == NULL){
+        return;
+    }
+    //Recurse post-order
+    bst_post_order_recursive(tree->root, callback);
+}
+
+//Helper function(s) 
 BSTNode *bst_create_node(void){
     //Allocate memory for a new BST node
     BSTNode *new_node = malloc(sizeof(BSTNode));
@@ -89,4 +116,37 @@ static BSTNode *bst_insert_recursive(BSTNode *node, int32_t data, void *payload)
         return new_tree_node;
     }
     
+}
+
+static void bst_inorder_recursive(BSTNode *node, void (*callback)(BSTNode *node)){
+    //Null guard
+    if(node == NULL){
+        return;
+    }
+    //Traverse the tree in-order
+    bst_inorder_recursive(node->left, callback);
+    callback(node);
+    bst_inorder_recursive(node->right, callback);
+}
+
+static void bst_pre_order_recursive(BSTNode *node, void (*callback)(BSTNode *node)){
+    //Null guard
+    if(node == NULL){
+        return;
+    }
+    //Traverse in pre-order
+    callback(node);
+    bst_pre_order_recursive(node->left, callback);
+    bst_pre_order_recursive(node->right, callback);
+}
+
+static void bst_post_order_recursive(BSTNode *node, void (*callback)(BSTNode *node)){
+    //Null guard
+    if (node == NULL){
+        return;
+    }
+    //Traverse in post-order
+    bst_post_order_recursive(node->left, callback);
+    bst_post_order_recursive(node->right, callback);
+    callback(node);
 }
