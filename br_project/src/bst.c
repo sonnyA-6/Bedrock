@@ -55,6 +55,19 @@ static BSTNode *bst_insert_recursive(BSTNode *node, int32_t data, void *payload)
     }
     
 }
+
+static BSTNode *bst_min_node(BSTNode *node){
+    //Base case
+    if (node == NULL){
+        return NULL;
+    }
+    if (node->left == NULL){
+        return node;
+    }
+    //Recurse left until the bottom is reached
+    return bst_min_node(node->left);
+}
+
 static BSTNode *bst_delete_key_recursive(BSTNode *node, int32_t data){
     
     if(node == NULL){
@@ -85,7 +98,7 @@ static BSTNode *bst_delete_key_recursive(BSTNode *node, int32_t data){
                 free(node);
                 return surviving_child;
             }
-        //Two Children | Find succesor, copy the values, delete succesor
+        //Two Children | Find successor, copy the values, delete successor
         }else{
             BSTNode *find_successor = bst_min_node(node->right);
             node->data = find_successor->data;
@@ -128,18 +141,6 @@ static void bst_post_order_recursive(BSTNode *node, void (*callback)(BSTNode *no
     bst_post_order_recursive(node->left, callback);
     bst_post_order_recursive(node->right, callback);
     callback(node);
-}
-
-static BSTNode *bst_min_node(BSTNode *node){
-    //Base case
-    if (node == NULL){
-        return NULL;
-    }
-    if (node->left == NULL){
-        return node;
-    }
-    //Recurse left until the bottom is reached
-    return bst_min_node(node->left);
 }
 
 static void bst_free_tree(BSTNode *node){
@@ -218,7 +219,7 @@ void bst_postorder(BST *tree, void(*callback)(BSTNode *node)){
 
 int bst_delete_key(BST *tree, int32_t data){
     //Null guards
-    if(tree == NULL){
+    if(bst_search(tree, data) == NULL){
         return -1;
     }
     tree->root = bst_delete_key_recursive(tree->root, data);
