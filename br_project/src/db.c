@@ -22,15 +22,10 @@ int db_init(Database *db){
         db->database_table[i].column_count = 0;
         memset(db->database_table[i].table_name, 0, MAX_NAME_LENGTH);
         bst_init(&db->database_table[i].table_rows);
-}
+    }
     return 0;
 }
 
-//Function goals:
-//find empty slot in database
-//validate the name
-//copy the columns
-//insert name into the trie
 int db_create_table(Database *db, const char *name, const Column *table_cols, uint32_t col_count){
     //Null guard(s)
     if(db == NULL || name == NULL || table_cols == NULL){
@@ -58,3 +53,43 @@ int db_create_table(Database *db, const char *name, const Column *table_cols, ui
     //Table is full
     return -1;
 }
+
+int db_drop_table(Database *db, const char *name){
+    //Null guards
+    if(db == NULL || name == NULL){
+        return -1;
+    }
+    //Call find table function
+    Table *table_to_drop = db_find_table(db, name);
+    if (table_to_drop == NULL){
+        return -1;
+    }
+    //Perform actions to drop the table
+    table_to_drop.table_name[0] = '\0';
+    table_to_drop.column_count = 0;
+    db->table_count--;
+    bst_delete_tree(&table_to_drop->table_rows);
+    trie_delete_key(&table_index, name);
+    return 0;
+}
+
+Table *db_find_table(Database *db, const char *name){
+    //Null guards
+    if(db == NULL || name == NULL){
+        return NULL;
+    }
+    //Check the trie to see if the name exists
+    bool existing_name = trie_search(&db->table_index, name);
+    if (existing_name){
+        //Iterate through the database table to find the name
+        for (int i=0; i<DATABASE_MAX_TABLE_AMT; i++){
+            //If the table name is found return it
+            if (strcmp(db->database_table[i].table_name, name) == 0){
+                return &db->database_table[i];
+            }
+        }
+    }
+    //doesn't exist in the trie
+    return NULL;
+}
+
