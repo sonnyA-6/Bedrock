@@ -37,16 +37,16 @@ typedef struct Database{
 }Database;
 
 //Database Functions
-// - init a table
-// - destroy a table
-// - create table
-// - drop a table
-// - search for a table by name
+int db_init(Database *db);
+int db_create_table(Database *db, char const *name, const Column *table_cols, uint32_t col_count);
+// - destroy a table (static helper in .c file)
+int db_drop_table(Database *db, const char *name);
+Table *db_find_table(Database *db, const char *name);
 
 
 //Table Functions
-// - add a column
-// - insert a row
-// - search for a row
-// - delete a row
+int db_add_column(Table *t, Column *col);
+int db_insert_row(Table *t, int32_t key, void* payload);
+BSTNode* db_search_row(Table *t, int32_t key);
+int db_delete_row(Table *t, int32_t key);
 #endif //BEDROCK_DB_H
