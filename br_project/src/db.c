@@ -1,12 +1,9 @@
 #include <cstddef>
+#include <cstring>
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include "db.h"
-
-
-//Static helpers
-
 
 //Main Functions
 int db_init(Database *db){
@@ -65,11 +62,12 @@ int db_drop_table(Database *db, const char *name){
         return -1;
     }
     //Perform actions to drop the table
-    table_to_drop.table_name[0] = '\0';
-    table_to_drop.column_count = 0;
-    db->table_count--;
     bst_delete_tree(&table_to_drop->table_rows);
-    trie_delete_key(&table_index, name);
+    table_to_drop->table_name[0] = '\0';
+    table_to_drop->column_count = 0;
+    trie_delete_key(&db->table_index, name);
+    db->table_count--;
+    
     return 0;
 }
 
@@ -93,3 +91,44 @@ Table *db_find_table(Database *db, const char *name){
     return NULL;
 }
 
+int db_add_column(Table *t, Column *col){
+    //Null guards
+    if(t == NULL || col == NULL){
+        return -1;
+    }
+    //Max amount of columns is already filled
+    if(t->column_count == TABLE_MAX_COLS){
+        return -1;
+    }
+    //Insert the column at the next available spot
+    memcpy(&t->table_column[t->column_count], col, sizeof(Column));
+    t->column_count++;
+    return 0;
+}
+
+int db_insert_row(Table *t, int32_t key, void *payload){
+    //Null guards
+    if(t == NULL || payload == NULL){
+        return -1;
+    }
+   int good_insert = bst_insert(&t->table_rows, key, payload);
+   return good_insert;
+}
+
+BSTNode* db_search_row(Table *t, int32_t key){
+    //Null guards
+    if(t == NULL){
+        return NULL;
+    }
+    BSTNode *row_exists = bst_search(&t->table_rows, key);
+    return row_exists;
+}
+
+int db_delete_row(Table *t, int32_t key){
+    //Null guard
+    if(t == NULL){
+        return -1;
+    }
+    int good_delete = bst_delete_key(&t->table_rows, key);
+    return good_delete;
+}

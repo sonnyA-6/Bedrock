@@ -39,7 +39,6 @@ typedef struct Database{
 //Database Functions
 int db_init(Database *db);
 int db_create_table(Database *db, char const *name, const Column *table_cols, uint32_t col_count);
-// - destroy a table (static helper in .c file)
 int db_drop_table(Database *db, const char *name);
 Table *db_find_table(Database *db, const char *name);
 
