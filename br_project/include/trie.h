@@ -21,10 +21,4 @@ bool trie_pre_fix_search(Trie *t, const char *c);
 int trie_delete_key(Trie *t, const char *c);
 int trie_delete_tree(Trie *tree);
 
-//Helper functions
-int char_to_index(char item);
-TrieNode *trie_create_node();
-bool trie_has_children(TrieNode *node);
-void trie_free_nodes(TrieNode *node);
-bool trie_delete_recursive (TrieNode *node, const char *c, int depth);
 #endif //BEDROCK_TRIE_H

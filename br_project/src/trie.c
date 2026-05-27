@@ -5,6 +5,73 @@
 #include <stdlib.h>
 #include <string.h>
 
+//Static helpers
+
+/*
+ * Determine what index position the item needs depending on its type: alphabetical, numeric, or _.
+ */
+static int char_to_index(char item) {
+    if (islower(item)) {
+        return item - 'a';
+    } else if (isdigit(item)) {
+        return item - '0';
+    } else if (item == '_') {
+        return 36;
+    }
+    return -1;
+}
+
+static TrieNode *trie_create_node(){
+    //Allocate memory for a new TrieNode | cast since malloc returns a void
+    TrieNode *new_node = malloc(sizeof(TrieNode));
+    if (new_node == NULL) {
+        return NULL;
+    }
+    memset(new_node->children, 0, sizeof(new_node->children));
+    new_node->is_leaf = false;
+    return new_node;
+}
+
+static bool trie_has_children(TrieNode *node) {
+    for (int i=0; i < TRIE_ALPHABET_SIZE; i++) {
+        //Any non-null slot is found
+        if (node->children[i] != NULL){
+            return true;
+        }
+    }
+    //Any null slot is found
+    return false;
+}
+
+static void trie_free_nodes(TrieNode *node) {
+    //Null guard
+    if (node == NULL) {
+        return;
+    }
+    //Recurse into each child node
+    for (int i=0; i< TRIE_ALPHABET_SIZE; i++) {
+        trie_free_nodes(node->children[i]);
+    }
+    free(node);
+}
+
+static bool trie_delete_recursive (TrieNode *node, const char *c, int depth) {
+    //Base case | reached end of key
+    if (c[depth] == '\0') {
+        node->is_leaf = false;
+        return !trie_has_children(node);
+    }
+    int char_index = char_to_index(c[depth]);
+    bool can_free = trie_delete_recursive(node->children[char_index], c, depth+1);
+    if (can_free) {
+        free(node->children[char_index]);
+        node->children[char_index] = NULL;
+    }
+    if (!(trie_has_children(node)) && !(node->is_leaf)) {
+        return true;
+    }
+    return false;
+}
 
 int trie_init(Trie *tree) {
     if (tree == NULL) {
@@ -132,68 +199,8 @@ int trie_delete_tree(Trie *tree){
     tree->root= NULL;
     return 0;
 }
-TrieNode *trie_create_node(){
-    //Allocate memory for a new TrieNode | cast since malloc returns a void
-    TrieNode *new_node = malloc(sizeof(TrieNode));
-    if (new_node == NULL) {
-        return NULL;
-    }
-    memset(new_node->children, 0, sizeof(new_node->children));
-    new_node->is_leaf = false;
-    return new_node;
-}
 
-bool trie_has_children(TrieNode *node) {
-    for (int i=0; i < TRIE_ALPHABET_SIZE; i++) {
-        //Any non-null slot is found
-        if (node->children[i] != NULL){
-            return true;
-        }
-    }
-    //Any null slot is found
-    return false;
-}
 
-void trie_free_nodes(TrieNode *node) {
-    //Null guard
-    if (node == NULL) {
-        return;
-    }
-    //Recurse into each child node
-    for (int i=0; i< TRIE_ALPHABET_SIZE; i++) {
-        trie_free_nodes(node->children[i]);
-    }
-    free(node);
-}
 
-bool trie_delete_recursive (TrieNode *node, const char *c, int depth) {
-    //Base case | reached end of key
-    if (c[depth] == '\0') {
-        node->is_leaf = false;
-        return !trie_has_children(node);
-    }
-    int char_index = char_to_index(c[depth]);
-    bool can_free = trie_delete_recursive(node->children[char_index], c, depth+1);
-    if (can_free) {
-        free(node->children[char_index]);
-        node->children[char_index] = NULL;
-    }
-    if (!(trie_has_children(node)) && !(node->is_leaf)) {
-        return true;
-    }
-    return false;
-}
 
-/*
- * Determine what index position the item needs depending on its type: alphabetical, numeric, or _.
- */
-int char_to_index(char item) {
-    if (islower(item)) {
-        return item - 'a';
-    } else if (isdigit(item)) {
-        return item - '0';
-    } else if (item == '_') {
-        return 36;
-    }
-    return -1;
-}
+

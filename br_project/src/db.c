@@ -1,6 +1,3 @@
-#include <cstddef>
-#include <cstring>
-#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include "db.h"

@@ -7,10 +7,12 @@ add_library(bedrock STATIC
         src/trie.c
         src/db.c
 )
-target_include_directories(bedrock PUBLIC include/)
+target_include_directories(bedrock PUBLIC ${CMAKE_SOURCE_DIR}/include)
 add_executable(test_stack tests/test_stack.c)
 add_executable(test_trie tests/test_trie.c)
 add_executable(test_bst tests/test_bst.c)
+add_executable(test_db tests/test_db.c)
 target_link_libraries(test_stack bedrock)
 target_link_libraries(test_trie bedrock)
 target_link_libraries(test_bst bedrock)
+target_link_libraries(test_db bedrock)
