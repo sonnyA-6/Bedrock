@@ -1,13 +1,17 @@
 # =====================
 # Rust
 # =====================
-/target/
+cli/target/
 **/*.rs.bk
 Cargo.lock
 
 #Rust-specific backup files
 *.rs.bk
 
+# =====================
+# C
+# =====================
+cmake-build-debug/
 
 # =====================
 # C#
