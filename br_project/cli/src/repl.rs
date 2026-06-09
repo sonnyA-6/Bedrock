@@ -1,16 +1,8 @@
-include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 use std::io::{self, Write};
+use crate::commands::parse_command;
+use crate::bindings::*;
 
-fn run_repl(db: &mut Database) {
-    let help_commands = r#"
-    Available commands:
-    --------------------------
-    create table <name>
-    create column <name>
-    insert row <key> <value>
-    search row <key> <value>
-    delete row <key> <value>
-    drop table <name>"#;
+pub fn run_repl(db: &mut Database) {
     println!("REPL initializing!");
 
     //if database creation is succuss launch the database
@@ -19,7 +11,7 @@ fn run_repl(db: &mut Database) {
     println!("Enter -- help for a list of commands\n\
               Enter -- exit to close out the program\n");
 
-    loop{
+    loop {
         //Print prompt
         print!("bedrock> "); //use print! to keep cursor on same line
         io::stdout().flush().unwrap();
@@ -28,15 +20,14 @@ fn run_repl(db: &mut Database) {
             .read_line(&mut db_string_buf)
             .expect("Failed to read line");
         let trimmed_db_string = db_string_buf.trim();
-        if trimmed_db_string == "exit" {
-            break;
-        }
-        else if trimmed_db_string == "help" {
-            //print commands available to the user
-                println!("{}", help_commands);
-        }
-        else {
-            //Command to parse information will go here
+        match parse_command(trimmed_db_string, db) {
+            Ok(k) => {
+                if k == "exit" {
+                    break;
+                }
+                println!("{}", k);
+            },
+            Err(e) => println!("{}", e)
         }
     }
 }
