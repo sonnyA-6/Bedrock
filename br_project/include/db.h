@@ -1,5 +1,6 @@
 #ifndef BEDROCK_DB_H
 #define BEDROCK_DB_H
+#include <cstdint>
 #include <stdint.h>
 #include <stdbool.h>
 #include "stack.h"
@@ -20,6 +21,7 @@ typedef struct Column{
     char column_name [MAX_NAME_LENGTH];
     ColumnType type_of_column;
     bool is_column_nullable;
+    uint32_t column_max_bytes;
 }Column;
 
 typedef struct Table{
