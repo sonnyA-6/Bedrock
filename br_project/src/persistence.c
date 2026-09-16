@@ -8,6 +8,15 @@ typedef struct row_recon{
     void *payload;
 }row_recon;
 
+// Determine how many rows are in a table's bst
+static uint32_t bst_count_helper(BSTNode *node){
+    // Null guard | BST is empty -> count is 0
+    if (node == NULL){
+        return 0;
+    }
+    // Recurse through the bst and retreve the count
+    return bst_count_helper(node->left) + bst_count_helper(node->right) + 1;
+}
 
 static int bst_write_helper(BSTNode *node, FILE *file, uint32_t payload_size){
     // Null guard | Nothing to write
@@ -88,24 +97,28 @@ int db_save(Database *db, const char *filepath) {
 
     //Iterate through the table count and write information into file  | go to cleanup if we need to exit early
     for (uint32_t i = 0; i < db->table_count; i++){
+        //Write the table name to the file
         size_t tableNameWrite = fwrite(db->database_table[i].table_name, sizeof(db->database_table[i].table_name), 1, writeFile);
         if (tableNameWrite != 1){
             status = -1;
             goto cleanup;
         }
 
-        size_t tableColumnWrite = fwrite(db->database_table[i].table_column, sizeof(db->database_table[i].table_column[0]), db->database_table[i].column_count, writeFile);
-        if (tableColumnWrite != db->database_table[i].column_count){
-            status = -1;
-            goto cleanup;
-        }
-        
+        //Write the table column count to the file
         size_t tableColCountWrite = fwrite(&db->database_table[i].column_count, sizeof(uint32_t), 1, writeFile);
         if (tableColCountWrite != 1){
             status = -1;
             goto cleanup;
         }
 
+        //Write the table columns to the file
+        size_t tableColumnWrite = fwrite(db->database_table[i].table_column, sizeof(db->database_table[i].table_column[0]), db->database_table[i].column_count, writeFile);
+        if (tableColumnWrite != db->database_table[i].column_count){
+            status = -1;
+            goto cleanup;
+        }
+        
+        //Determine the computed payload size with the payload function
         uint32_t computed_payload;
         int payload_success = calculate_row_payload_size(db->database_table[i].table_column, db->database_table[i].column_count, &computed_payload);
         if (payload_success != 0){
@@ -113,6 +126,14 @@ int db_save(Database *db, const char *filepath) {
             goto cleanup;
         }
 
+        uint32_t rowsPerTable = bst_count_helper(db->database_table[i].table_rows.root);
+        size_t tableRowsWrite = fwrite(&rowsPerTable, sizeof(uint32_t), 1, writeFile);
+        if (tableRowsWrite != 1){
+            status = -1;
+            goto cleanup;
+        }
+
+        //Call helper to determine success
         int bst_helper_success = bst_write_helper(db->database_table[i].table_rows.root, writeFile, computed_payload);
         if (bst_helper_success != 0){
             status = -1;
