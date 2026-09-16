@@ -54,7 +54,32 @@ static int bst_write_helper(BSTNode *node, FILE *file, uint32_t payload_size){
 
 }
 
-static int bst_reconstruction_helper(BST *tree, const row_recon *array, int32_t low_bound, int32_t high_bound);
+static int bst_reconstruction_helper(BST *tree, const row_recon *array, int32_t low_bound, int32_t high_bound){
+    // Base case: There is no range, nothing to insert
+    if (low_bound > high_bound){
+        return 0;
+    }
+
+    int32_t mid = (low_bound + high_bound) / 2;
+    int insertMiddleElement = bst_insert(tree, array[mid].key, array[mid].payload);
+    if (insertMiddleElement != 0){
+        return insertMiddleElement;
+    }
+
+    // Recurse left
+    int insertLeft = bst_reconstruction_helper(tree, array, low_bound, mid - 1);
+    if (insertLeft != 0){
+        return insertLeft;
+    }
+    
+    int insertRight = bst_reconstruction_helper(tree, array, mid + 1, high_bound);
+    if (insertRight != 0){
+        return insertRight;
+    }
+
+    // Sucessful reconstruction
+    return 0;
+}
 
 static int calculate_row_payload_size(const Column *col, uint32_t column_count, uint32_t  *total_row_payload){
     //Null guard
